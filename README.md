@@ -1,6 +1,8 @@
 # Momentum 🚀
 
 A study tracker made by a 17 year old student who got tired of pretending productivity apps actually understand students.
+https://iitianyugank.github.io/study-momentum-tracker/
+Try Yourself
 
 ## What is this?
 
