@@ -1,0 +1,7 @@
+# OS metadata files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Optional: Large source images (uncomment if you want to keep the raw 1.5MB icon local)
+# icon.png

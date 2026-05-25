@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Momentum | Study Tracker</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <!-- Google Fonts for Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheets & Manifest -->
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="theme-color" content="#06B6D4">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span class="logo-icon">⚡</span>
+        <h1>Momentum</h1>
+      </div>
+      
+      <!-- Right Controls -->
+      <div class="header-controls">
+        <!-- Streak Display -->
+        <div id="streak-badge" class="streak-badge glow-orange" title="Your current study streak">
+          <span class="streak-emoji">🔥</span>
+          <span id="streak-count">0</span> Days
+        </div>
+        
+        <button id="btn-header-donate" class="btn btn-secondary btn-small donate-header-btn">Donate</button>
+
+        <!-- Account Badge -->
+        <div class="account-control-wrapper">
+          <!-- Logged Out Button -->
+          <button id="btn-header-signin" class="btn btn-secondary btn-small">
+            👤 Sign In
+          </button>
+          
+          <!-- Logged In Dropdown -->
+          <div id="user-profile-menu" class="profile-dropdown" style="display: none;">
+            <button id="btn-profile-trigger" class="profile-trigger-btn">
+              <span class="avatar-icon">👤</span>
+              <span id="user-email-display" class="user-email text-secondary">user@example.com</span>
+              <span class="chevron-down">▼</span>
+            </button>
+            <div id="profile-dropdown-content" class="dropdown-content glassmorphism">
+              <div class="dropdown-header">
+                <strong>Account Status</strong>
+                <span id="cloud-sync-status" class="sync-status text-secondary">Offline (Local)</span>
+              </div>
+              <button id="btn-sync-now" class="dropdown-item">🔄 Sync Data</button>
+              <button id="btn-logout" class="dropdown-item text-danger">🚪 Log Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-layout">
+      
+      <!-- Left Column: Primary Stats & Form Actions -->
+      <section class="column-left">
+        <!-- Welcome Card -->
+        <div class="dashboard-card welcome-card">
+          <div class="welcome-text">
+            <h2>Welcome Back, <span class="highlight-cyan">Scholar</span></h2>
+            <p class="text-secondary">Keep your momentum going. Daily habits shape your future.</p>
+          </div>
+          <button id="btn-open-log-modal" class="btn btn-primary btn-glow">
+            <span class="btn-icon">+</span> Log Study Session
+          </button>
+        </div>
+
+        <!-- Today's Summary Card -->
+        <div class="dashboard-card summary-card">
+          <div class="card-header">
+            <h3>📅 Today's Summary</h3>
+            <span id="today-date-str" class="date-badge">May 23, 2026</span>
+          </div>
+          <div class="summary-stats">
+            <div class="stat-box">
+              <span class="stat-value" id="today-total-hours">0.0</span>
+              <span class="stat-title">Hours Studied</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value" id="today-mood-summary">➖</span>
+              <span class="stat-title">Latest Mood</span>
+            </div>
+          </div>
+          <div class="summary-details">
+            <div class="detail-section">
+              <h4>Subjects Covered:</h4>
+              <ul id="today-subjects-list" class="styled-list">
+                <li class="empty-state-list text-secondary">No subjects logged today.</li>
+              </ul>
+            </div>
+            <div class="detail-section">
+              <h4>Topics Completed:</h4>
+              <div id="today-topics-container" class="topics-tags">
+                <span class="empty-state-text text-secondary">No topics recorded.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- XP & Level Card -->
+        <div class="dashboard-card xp-card" id="xp-dashboard-card">
+          <div class="card-header">
+            <h3>✨ XP & Progression</h3>
+            <span id="user-level-badge" class="badge-support">Level 1</span>
+          </div>
+          <div class="xp-progress-container">
+            <div class="xp-text">
+              <span id="current-xp-display">0 / 100 XP</span>
+              <span class="text-secondary" id="xp-to-next-level">100 XP to Level 2</span>
+            </div>
+            <div class="xp-bar-bg">
+              <div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="xp-insights">
+            <p class="text-secondary small">💡 Pro Tip: Productive sessions earn a 1.2x XP multiplier!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Visualization & History -->
+      <section class="column-right">
+        <!-- 7-Day Chart Card -->
+        <div class="dashboard-card chart-card">
+          <div class="card-header">
+            <h3>📈 Last 7 Days</h3>
+            <span class="text-secondary small">Momentum Trend</span>
+          </div>
+          <!-- Custom Interactive SVG Chart -->
+          <div class="chart-container" id="weekly-chart-container">
+            <!-- Programmatically injected SVG -->
+          </div>
+        </div>
+
+        <!-- Advanced Analytics Card -->
+        <div class="dashboard-card analytics-card" id="analytics-dashboard-card">
+          <div class="card-header">
+            <h3>📊 Analytics</h3>
+            <button id="btn-export-csv" class="btn btn-secondary btn-small">📤 Export CSV</button>
+          </div>
+          <div class="analytics-grid">
+            <div class="analytic-panel">
+              <h4>Subject Distribution</h4>
+              <div class="pie-chart-wrapper" id="subject-pie-chart">
+                <!-- SVG pie chart -->
+              </div>
+            </div>
+            <div class="analytic-panel">
+              <h4>Mood Correlation</h4>
+              <p class="small text-secondary desc">Average hours by mood category:</p>
+              <div class="mood-correlation-wrapper" id="mood-bar-chart">
+                <!-- Mini mood hours chart -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History/Log List Card -->
+        <div class="dashboard-card history-card">
+          <div class="card-header">
+            <h3>📝 Recent Sessions</h3>
+            <span id="sessions-count" class="badge-count text-secondary">0 sessions</span>
+          </div>
+          <div class="history-list-wrapper">
+            <div id="history-empty-state" class="empty-state">
+              <div class="empty-icon">📅</div>
+              <h4>No sessions logged yet</h4>
+              <p class="text-secondary">Click "+ Log Study Session" to get started and build your streak!</p>
+            </div>
+            <ul id="history-list" class="history-list">
+              <!-- Dynamically populated entries -->
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: Log Study Session -->
+  <div id="log-modal" class="modal-overlay">
+    <div class="modal-content glassmorphism">
+      <button class="modal-close" id="btn-close-log-modal">&times;</button>
+      <h2 id="modal-title">Log Study Session</h2>
+      <p id="modal-subtitle" class="text-secondary">Log your focus to visualize progress.</p>
+      
+      <form id="study-log-form">
+        <!-- Hidden input for edit session ID -->
+        <input type="hidden" id="edit-session-id" value="">
+        
+        <!-- Subject Input -->
+        <div class="form-group">
+          <label for="form-subject">Subject</label>
+          <div class="autocomplete-wrapper">
+            <input type="text" id="form-subject" placeholder="e.g. Mathematics, Python, Chemistry" required autocomplete="off">
+            <div id="subject-suggestions" class="suggestions-box"></div>
+          </div>
+        </div>
+        
+        <!-- Row: Hours & Mood -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="form-hours">Duration (Hours)</label>
+            <input type="number" id="form-hours" step="0.1" min="0.1" max="24" placeholder="e.g. 1.5" required>
+          </div>
+          
+          <div class="form-group flex-1">
+            <label>Today's Mood</label>
+            <div class="mood-selector">
+              <label class="mood-btn" title="Productive (1.2x XP)">
+                <input type="radio" name="form-mood" value="productive" checked>
+                <span class="mood-emoji">🚀</span>
+                <span class="mood-name">Productive</span>
+              </label>
+              <label class="mood-btn" title="Neutral">
+                <input type="radio" name="form-mood" value="neutral">
+                <span class="mood-emoji">😐</span>
+                <span class="mood-name">Neutral</span>
+              </label>
+              <label class="mood-btn" title="Tired">
+                <input type="radio" name="form-mood" value="tired">
+                <span class="mood-emoji">😴</span>
+                <span class="mood-name">Tired</span>
+              </label>
+              <label class="mood-btn" title="Distracted">
+                <input type="radio" name="form-mood" value="distracted">
+                <span class="mood-emoji">🤪</span>
+                <span class="mood-name">Distracted</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Topics Completed Input -->
+        <div class="form-group">
+          <label for="form-topics">Topics Completed (Comma-separated)</label>
+          <input type="text" id="form-topics" placeholder="e.g. Calculus, Loops, Redox Reactions">
+          <span class="field-hint text-secondary">These will be saved as separate tags.</span>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-log-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-session">Save Session</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Donate -->
+  <div id="donate-modal" class="modal-overlay">
+    <div class="modal-content donate-modal-content glassmorphism">
+      <button class="modal-close" id="btn-close-donate-modal">&times;</button>
+      <div class="donate-header">
+        <span class="donate-heart">❤</span>
+        <h2>Keep Momentum Free</h2>
+        <p class="text-secondary">Everything in this app is free now. No hidden analytics. No confusing upgrades. No wall between you and your progress.</p>
+      </div>
+      <div class="donate-message">
+        <p>I built Momentum because studying consistently is already hard enough. Most students do not need another app asking for money before it helps them.</p>
+        <p>The reality is still simple: hosting, tools, testing, and time cost something. If this tracker genuinely helps you show up, a small donation keeps it alive and improving for everyone.</p>
+      </div>
+      <div class="donate-options">
+        <div class="feature-item">
+          <span class="feature-check">✓</span>
+          <div class="feature-text">
+            <strong>All features stay free</strong>
+            <p class="text-secondary small">XP, analytics, export, and logging are open to everyone.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>
+          <div class="feature-text">
+            <strong>Donate only if you want to</strong>
+            <p class="text-secondary small">No pressure. No guilt. Just support if the app gave you value.</p>
+          </div>
+        </div>
+      </div>
+      <button id="btn-donate-contact" class="btn btn-primary btn-glow btn-large">
+        Donate / Contact on Instagram
+      </button>
+      <p class="modal-footer text-secondary small">Message @iamyugank if you want to support the project.</p>
+    </div>
+  </div>
+
+  <!-- Level Up Celebration Overlay -->
+  <div id="level-up-celebration" class="celebration-overlay">
+    <div class="celebration-box">
+      <div class="celebration-stars">⭐✨⭐</div>
+      <h2>LEVEL UP!</h2>
+      <p class="level-congrats">You reached Level <span id="new-level-val">2</span>!</p>
+      <p class="text-secondary small">Your dedication is paying off. Keep it up!</p>
+      <button id="btn-close-celebration" class="btn btn-primary">Awesome!</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Authentication (Sign In / Sign Up) -->
+  <div id="auth-modal" class="modal-overlay">
+    <div class="modal-content glassmorphism">
+      <button class="modal-close" id="btn-close-auth-modal">&times;</button>
+      
+      <!-- Tabs header -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-login-btn">Log In</button>
+        <button class="auth-tab-btn" id="tab-signup-btn">Sign Up</button>
+      </div>
+      
+      <!-- Form -->
+      <form id="auth-form">
+        <h2 id="auth-title">Welcome Back</h2>
+        <p id="auth-subtitle" class="text-secondary">Sign in to sync your study logs to the cloud.</p>
+        
+        <div class="form-group">
+          <label for="auth-email">Email Address</label>
+          <input type="email" id="auth-email" placeholder="e.g. student@gmail.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" placeholder="••••••••" required minlength="6">
+        </div>
+        
+        <div id="auth-error-msg" class="auth-error-box" style="display: none;"></div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-auth-modal">Cancel</button>
+          <button type="submit" id="btn-auth-submit" class="btn btn-primary btn-glow">Log In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div id="toast-notification" class="toast-box glassmorphism">
+    <span id="toast-message">Testing toast notification</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
