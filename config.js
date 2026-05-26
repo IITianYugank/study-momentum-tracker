@@ -14,8 +14,8 @@
 -------------------------------------------------- */
 
 window.SUPABASE_CONFIG = {
-  URL: "https://kgjwsdrgigpoewvmmftb.supabase.co",
-  ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnandzZHJnaWdwb2V3dm1tZnRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MDAyMTUsImV4cCI6MjA5NTE3NjIxNX0.YYUxTZm1eAoGtaHV7POy58Iv3efLVHS928T0z83Cp3A"
+  URL: "https://kgjwsdrgigpoewvmmftb.supabase.co",      // Paste your Supabase project URL here
+  ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnandzZHJnaWdwb2V3dm1tZnRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MDAyMTUsImV4cCI6MjA5NTE3NjIxNX0.YYUxTZm1eAoGtaHV7POy58Iv3efLVHS928T0z83Cp3A"  // Paste your Supabase public anon key here
 };
 
 window.DONATION_CONFIG = {
