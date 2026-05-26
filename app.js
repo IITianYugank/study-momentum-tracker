@@ -181,7 +181,8 @@ function saveXP() {
 -------------------------------------------------- */
 
 function initSupabase() {
-  const config = window.SUPABASE_CONFIG || {};
+  // Gracefully handle const declarations at top-level of config.js (which don't bind to window)
+  const config = (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG : null) || window.SUPABASE_CONFIG || {};
   if (typeof supabase !== 'undefined' && config.URL && config.ANON_KEY) {
     try {
       supabaseClient = supabase.createClient(config.URL, config.ANON_KEY);
@@ -313,7 +314,7 @@ async function fetchCloudData() {
       if (sessionsError) throw sessionsError;
       
       if (sessions) {
-        STATE.sessions = sessions.map(db => normalizeSession({
+        const cloudSessions = sessions.map(db => normalizeSession({
           id: db.id,
           date: db.date,
           subject: db.subject,
@@ -322,6 +323,8 @@ async function fetchCloudData() {
           topics: db.topics,
           timestamp: db.timestamp
         }));
+        // Merge instead of blind overwrite to protect local offline logs
+        STATE.sessions = mergeSessions(STATE.sessions, cloudSessions);
         saveSessions();
       }
     } else {
@@ -335,7 +338,8 @@ async function fetchCloudData() {
       
       const cachedSessionsStr = localStorage.getItem(`mock_cloud_sessions_${userId}`);
       if (cachedSessionsStr) {
-        STATE.sessions = JSON.parse(cachedSessionsStr).map(normalizeSession);
+        const cloudSessions = JSON.parse(cachedSessionsStr).map(normalizeSession);
+        STATE.sessions = mergeSessions(STATE.sessions, cloudSessions);
         saveSessions();
       }
     }
@@ -1291,10 +1295,10 @@ authForm.addEventListener("submit", async (e) => {
     // Save current simulated user in local storage if not live
     if (!STATE.isSupabaseEnabled && result.user) {
       localStorage.setItem('mock_current_user', JSON.stringify(result.user));
+      await handleLoginSuccess(result.user);
     }
     
     closeAuthModal();
-    await handleLoginSuccess(result.user);
     
   } catch (err) {
     console.error("Auth action failed:", err);
@@ -1436,28 +1440,40 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Restore authentication session on startup
   if (STATE.isSupabaseEnabled) {
     try {
-      // Listen to real-time Auth State Changes
+      // Listen to real-time Auth State Changes (handles initial session load and subsequent triggers)
       supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (session) {
+          const isInitialLoad = !STATE.currentUser;
           STATE.currentUser = session.user;
           updateAuthUI();
-          await fetchCloudData();
+          
+          if (isInitialLoad) {
+            // First time loading user session: merge local cache with cloud data to prevent loss
+            const offlineSessions = [...STATE.sessions];
+            const offlineXP = STATE.xp;
+            
+            await fetchCloudData();
+            
+            STATE.sessions = mergeSessions(offlineSessions, STATE.sessions);
+            STATE.xp = Math.max(offlineXP, STATE.xp);
+            
+            saveSessions();
+            saveXP();
+            
+            // Push merged results back to Supabase
+            await syncLocalToCloud();
+          } else {
+            // Just regular sync/fetch on subsequent triggers
+            await fetchCloudData();
+          }
           renderDashboard();
         } else {
-        STATE.currentUser = null;
-        updateAuthUI();
-        loadState();
-        renderDashboard();
-      }
+          STATE.currentUser = null;
+          updateAuthUI();
+          loadState();
+          renderDashboard();
+        }
       });
-      
-      // Get initial session
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        await handleLoginSuccess(session.user);
-      } else {
-        renderDashboard();
-      }
     } catch (err) {
       console.error("Auth session recovery failed:", err);
       renderDashboard();
